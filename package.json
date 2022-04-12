@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/tripalink-barry/proll/issues"
   },
-  "homepage": "https://github.com/tripalink-barry/proll#readme"
+  "homepage": "https://github.com/tripalink-barry/proll#readme",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
 }
