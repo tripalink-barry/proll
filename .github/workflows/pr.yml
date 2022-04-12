@@ -1,0 +1,28 @@
+name: Pull Request Created
+
+on:
+  pull_request
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - shell: bash
+        run: echo "##[set-output name=email;]$(echo $(git log -n 1 --pretty=format:%ae))"
+        id: get_current_email
+
+      - shell: bash
+        run: echo "##[set-output name=name;]$(echo $(git log -n 1 --pretty=format:%an))"
+        id: get_current_name
+
+      - shell: bash
+        run: echo "##[set-output name=count;]$(git log --oneline | wc -l)"
+        id: get_count
+      - run: echo ${{ toJSON(github.event.pull_request) }}
+      
+      - run: |
+          curl -X POST \
+          -H 'Content-type: application/json' \
+          --data '{ "type": "mrkdwn", "text": "*[${{ github.event.pull_request.base.repo.full_name }}]* <mailto:${{ steps.get_current_email.outputs.email }}|${{ steps.get_current_name.outputs.name }}> wants to merge ${{ steps.get_count.outputs.count }} commit(s) into `<${{ github.event.pull_request.base.repo.html_url }}|${{ github.event.pull_request.base.ref }}>` from `<${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>`"}' ${{ secrets.SLACK_WEBHOOK_URL }}
